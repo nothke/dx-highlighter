@@ -1,6 +1,8 @@
 # dx-highlighter
 A Deus Ex/System Shock inspired pulsing bounds item highlighter
 
+![Tuc tuc tuc](Documentation~/Images/dx.gif)
+
 ### How to Use
 
 1. Add dx_highlighter_canvas prefab to your scene;
