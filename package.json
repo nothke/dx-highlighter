@@ -1,0 +1,8 @@
+{
+  "name": "nothke.dxhighlighter",
+  "displayName": "DX Highlighter",
+  "version": "1.0.0",
+  "unity": "2018.1",
+  "description": "Deus Ex/System Shock inspired pulsing bounds highlighter",
+  "type": "library"
+}
