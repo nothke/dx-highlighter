@@ -1,40 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class DXHighlighter : MonoBehaviour
 {
     public bool pulsing = true;
     public float pulseSpeed = 80;
     public float pulseDistancePixels = 20;
-    float offsetPixels;
+
+    public RectTransform image;
+    public bool manualUpdate = false;
 
     Bounds worldBounds;
     public Bounds screenBounds { get; private set; }
 
-    //GameObject target;
-
-    public RectTransform image;
-
-    public bool manualUpdate = false;
-
-    Vector3[] boundPoint = new Vector3[8];
-
+    float offsetPixels;
+    Vector3[] boundsCorners = new Vector3[8];
     List<Renderer> renderersList = new List<Renderer>(10);
 
     bool wasHighlighting = false;
 
     public void Highlight(GameObject go)
     {
-        //target = go;
         FindRenderersFor(go);
         CalculateBounds();
     }
 
     public void ClearAll()
     {
-        //target = null;
         renderersList.Clear();
 
         image.gameObject.SetActive(false);
@@ -83,33 +75,34 @@ public class DXHighlighter : MonoBehaviour
             worldBounds.Encapsulate(renderersList[i].bounds);
         }
 
-        // Find 8 points of the bounds
-        boundPoint[0] = worldBounds.min;
-        boundPoint[1] = worldBounds.max;
-        boundPoint[2] = new Vector3(boundPoint[0].x, boundPoint[0].y, boundPoint[1].z);
-        boundPoint[3] = new Vector3(boundPoint[0].x, boundPoint[1].y, boundPoint[0].z);
-        boundPoint[4] = new Vector3(boundPoint[1].x, boundPoint[0].y, boundPoint[0].z);
-        boundPoint[5] = new Vector3(boundPoint[0].x, boundPoint[1].y, boundPoint[1].z);
-        boundPoint[6] = new Vector3(boundPoint[1].x, boundPoint[0].y, boundPoint[1].z);
-        boundPoint[7] = new Vector3(boundPoint[1].x, boundPoint[1].y, boundPoint[0].z);
+        // Find 8 corners of the bounds
+        boundsCorners[0] = worldBounds.min;
+        boundsCorners[1] = worldBounds.max;
+        boundsCorners[2] = new Vector3(boundsCorners[0].x, boundsCorners[0].y, boundsCorners[1].z);
+        boundsCorners[3] = new Vector3(boundsCorners[0].x, boundsCorners[1].y, boundsCorners[0].z);
+        boundsCorners[4] = new Vector3(boundsCorners[1].x, boundsCorners[0].y, boundsCorners[0].z);
+        boundsCorners[5] = new Vector3(boundsCorners[0].x, boundsCorners[1].y, boundsCorners[1].z);
+        boundsCorners[6] = new Vector3(boundsCorners[1].x, boundsCorners[0].y, boundsCorners[1].z);
+        boundsCorners[7] = new Vector3(boundsCorners[1].x, boundsCorners[1].y, boundsCorners[0].z);
 
         Camera cam = Camera.main;
 
-        boundPoint[0] = cam.WorldToScreenPoint(boundPoint[0]);
-        boundPoint[0].z = 10;
-        Bounds _screenBounds = new Bounds(boundPoint[0], Vector3.zero);
+        // Transform bounds to screen-space
+        boundsCorners[0] = cam.WorldToScreenPoint(boundsCorners[0]);
+        boundsCorners[0].z = 10;
+        Bounds _screenBounds = new Bounds(boundsCorners[0], Vector3.zero);
 
         for (int i = 1; i < 8; i++)
         {
-            boundPoint[i] = cam.WorldToScreenPoint(boundPoint[i]);
-            boundPoint[i].z = 10;
-            _screenBounds.Encapsulate(boundPoint[i]);
+            boundsCorners[i] = cam.WorldToScreenPoint(boundsCorners[i]);
+            boundsCorners[i].z = 10;
+            _screenBounds.Encapsulate(boundsCorners[i]);
         }
 
         screenBounds = _screenBounds;
     }
 
-    void UpdateUIRects()
+    public void UpdateUIRects()
     {
         bool isHighlighting = renderersList.Count > 0;
         if (isHighlighting != wasHighlighting)
@@ -121,7 +114,6 @@ public class DXHighlighter : MonoBehaviour
 
         if (isHighlighting)
         {
-
             image.position = screenBounds.center;
 
             if (pulsing)
@@ -138,13 +130,13 @@ public class DXHighlighter : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.DrawWireCube(worldBounds.center, worldBounds.size);
 
         for (int i = 0; i < 8; i++)
         {
-            Gizmos.DrawWireCube(Camera.main.ScreenToWorldPoint(boundPoint[i]), Vector3.one * 0.02f);
+            Gizmos.DrawWireCube(Camera.main.ScreenToWorldPoint(boundsCorners[i]), Vector3.one * 0.02f);
         }
     }
 }
