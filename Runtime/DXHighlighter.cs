@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class DXHighlighter : MonoBehaviour
 {
     public bool pulsing = true;
-    public float pulseSpeed = 40;
+    public float pulseSpeed = 80;
     public float pulseDistancePixels = 20;
     float offsetPixels;
 
@@ -23,11 +23,12 @@ public class DXHighlighter : MonoBehaviour
 
     List<Renderer> renderersList = new List<Renderer>(10);
 
+    bool wasHighlighting = false;
+
     public void Highlight(GameObject go)
     {
         //target = go;
         FindRenderersFor(go);
-        image.gameObject.SetActive(true);
         CalculateBounds();
     }
 
@@ -35,7 +36,9 @@ public class DXHighlighter : MonoBehaviour
     {
         //target = null;
         renderersList.Clear();
+
         image.gameObject.SetActive(false);
+        wasHighlighting = false;
     }
 
     public void AddRenderer(Renderer renderer)
@@ -108,19 +111,31 @@ public class DXHighlighter : MonoBehaviour
 
     void UpdateUIRects()
     {
-        image.position = screenBounds.center;
-
-        if (pulsing)
+        bool isHighlighting = renderersList.Count > 0;
+        if (isHighlighting != wasHighlighting)
         {
-            offsetPixels -= Time.deltaTime * pulseSpeed;
-            if (offsetPixels < 0)
-                offsetPixels = pulseDistancePixels;
+            image.gameObject.SetActive(isHighlighting);
+            offsetPixels = 0; // Resets timer
         }
-        else
-            offsetPixels = 0;
+        wasHighlighting = isHighlighting;
 
-        Vector2 sizeOff = Vector2.one * offsetPixels;
-        image.sizeDelta = (Vector2)screenBounds.size + sizeOff;
+        if (isHighlighting)
+        {
+
+            image.position = screenBounds.center;
+
+            if (pulsing)
+            {
+                offsetPixels -= Time.deltaTime * pulseSpeed;
+                if (offsetPixels < 0)
+                    offsetPixels = pulseDistancePixels;
+            }
+            else
+                offsetPixels = 0;
+
+            Vector2 sizeOff = Vector2.one * offsetPixels;
+            image.sizeDelta = (Vector2)screenBounds.size + sizeOff;
+        }
     }
 
     private void OnDrawGizmos()

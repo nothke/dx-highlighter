@@ -381,9 +381,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pulsing: 1
-  pulseSpeed: 40
+  pulseSpeed: 80
   pulseDistancePixels: 20
   image: {fileID: 1292085921421059094}
+  manualUpdate: 0
 --- !u!1 &1292085922472464699
 GameObject:
   m_ObjectHideFlags: 0
