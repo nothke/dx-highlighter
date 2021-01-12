@@ -3,11 +3,13 @@ using UnityEngine;
 
 public class DXHighlighter : MonoBehaviour
 {
+    public RectTransform image;
+
     public bool pulsing = true;
     public float pulseSpeed = 80;
     public float pulseDistancePixels = 20;
+    public int screenEdgeMargin = 40;
 
-    public RectTransform image;
     public bool manualUpdate = false;
 
     Bounds worldBounds;
@@ -95,9 +97,22 @@ public class DXHighlighter : MonoBehaviour
         for (int i = 1; i < 8; i++)
         {
             boundsCorners[i] = cam.WorldToScreenPoint(boundsCorners[i]);
-            boundsCorners[i].z = 10;
+            //boundsCorners[i].z = 10;
             _screenBounds.Encapsulate(boundsCorners[i]);
         }
+
+        // Clamp to screen edges
+        Vector3 min = _screenBounds.min;
+        Vector3 max = _screenBounds.max;
+        if (min.x < screenEdgeMargin) min.x = screenEdgeMargin;
+        if (min.y < screenEdgeMargin) min.y = screenEdgeMargin;
+        float lim = Screen.width - screenEdgeMargin;
+        if (max.x > lim) max.x = lim;
+        lim = Screen.height - screenEdgeMargin;
+        if (max.y > lim) max.y = lim;
+
+        min.z = max.z = 0;
+        _screenBounds.SetMinMax(min, max);
 
         screenBounds = _screenBounds;
     }
