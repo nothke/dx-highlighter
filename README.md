@@ -3,6 +3,15 @@ A Deus Ex/System Shock inspired pulsing bounds item highlighter
 
 ![Tuc tuc tuc](Documentation~/Images/dx.gif)
 
+### Installation
+
+You can use this repo directly via the Unity package manager:
+1. In Unity, go to Window > Package Manager
+2. Click on the "+" sign in the upper left corner > Add package from git URL
+3. Copy the address of this repository: https://github.com/nothke/dx-highlighter and hit Add
+
+Alternatively, you can clone or download this repo and put it in the Packages folder in your Unity project.
+
 ### How to Use
 
 1. Add dx_highlighter_canvas prefab to your scene;
